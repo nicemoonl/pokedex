@@ -1,0 +1,161 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model GameGeneration {
+  id                Int     @id @default(autoincrement())
+  generation_id     Int     @unique
+  name              String  @unique
+  main_region       String
+  version_groups    GameVersionGroup[]
+}
+
+model GameVersionGroup {
+  id                Int             @id @default(autoincrement())
+  version_group_id  Int             @unique
+  name              String          @unique
+  order             Int
+  generation_id     Int
+  game_generation   GameGeneration  @relation(fields: [generation_id], references: [generation_id], onDelete: NoAction, onUpdate: NoAction)
+  pokedexes         Pokedex[]
+  versions          GameVersion[]
+}
+
+model GameVersion {
+  id                Int     @id @default(autoincrement())
+  version_id        Int     @unique
+  name              String  @unique
+  name_jp           String?
+  name_zh           String?
+  version_group_id  Int
+  version_group     GameVersionGroup  @relation(fields: [version_group_id], references: [version_group_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Pokedex {
+  id                       Int     @id @default(autoincrement())
+  pokedex_id               Int     @unique
+  name                     String  @unique
+  version_groups           GameVersionGroup[]
+  pokemon_species_entries  PokemonSpeciesDexEntry[]
+}
+
+model PokemonSpecies {
+  id                        Int             @id @default(autoincrement())
+  pokemon_species_id        Int             @unique
+  name                      String          @unique
+  name_jp                   String?
+  name_zh                   String?
+  order                     Int
+  gender_rate               Int
+  capture_rate              Int
+  is_legendary              Boolean
+  is_mythical               Boolean
+  pokedex_entries           PokemonSpeciesDexEntry[]
+  evolves_from_species_name String?
+  generation_name           String
+  pokemons                  Pokemon[]
+}
+
+model PokemonSpeciesDexEntry {
+  id                      Int               @id @default(autoincrement())
+  pokedex_name            String
+  pokedex                 Pokedex           @relation(fields: [pokedex_name], references: [name], onDelete: NoAction, onUpdate: NoAction)
+  entry_number            Int
+  pokemon_species_name    String
+  pokemon_species         PokemonSpecies    @relation(fields: [pokemon_species_name], references: [name], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([pokedex_name, entry_number])
+}
+
+model PokemonType {
+  id                  Int           @id @default(autoincrement())
+  type_id             Int           @unique
+  name                String        @unique
+  name_jp             String?
+  name_zh             String?
+  pokemons            Pokemon[]
+  no_damage_to        PokemonType[] @relation(name: "no_damage")
+  half_damage_to      PokemonType[] @relation(name: "half_damage")
+  double_damage_to    PokemonType[] @relation(name: "double_damage")
+  no_damage_from      PokemonType[] @relation(name: "no_damage")
+  half_damage_from    PokemonType[] @relation(name: "half_damage")
+  double_damage_from  PokemonType[] @relation(name: "double_damage")
+}
+
+model PokemonAbility {
+  id              Int     @id @default(autoincrement())
+  ability_id      Int     @unique
+  name            String  @unique
+  name_jp         String?
+  name_zh         String?
+  effect          String?
+  short_effect    String?
+  pokemon         PokemonToAbility[]
+}
+
+model Pokemon {
+  id                    Int               @id @default(autoincrement())
+  pokemon_id            Int               @unique
+  name                  String            @unique
+  weight                Int
+  abilities             PokemonToAbility[]
+  sprites               PokemonSprites?
+  pokemon_stats         PokemonStats?
+  types                 PokemonType[]
+  pokemon_species_name  String
+  pokemon_species       PokemonSpecies    @relation(fields: [pokemon_species_name], references: [name], onDelete: NoAction, onUpdate: NoAction)
+  is_default            Boolean
+}
+
+model PokemonToAbility {
+  id              Int             @id @default(autoincrement())
+  pokemon_id      Int
+  ability_id      Int
+  pokemon         Pokemon?        @relation(fields: [pokemon_id], references: [pokemon_id], onDelete: NoAction, onUpdate: NoAction)
+  ability         PokemonAbility? @relation(fields: [ability_id], references: [ability_id], onDelete: NoAction, onUpdate: NoAction)
+  is_hidden       Boolean
+  slot            Int
+
+  @@unique([pokemon_id, ability_id])
+}
+
+model PokemonSprites {
+  id                  Int       @id @default(autoincrement())
+  pokemon_id          Int       @unique
+  pokemon             Pokemon   @relation(fields: [pokemon_id], references: [pokemon_id], onDelete: NoAction, onUpdate: NoAction)
+  front_default       String
+  front_shiny         String
+  front_female        String
+  front_shiny_female  String
+  back_default        String
+  back_shiny          String
+  back_female         String
+  back_shiny_female   String
+}
+
+model PokemonStats {
+  id                  Int      @id @default(autoincrement())
+  pokemon_id          Int      @unique
+  name                String   @unique
+  pokemon             Pokemon  @relation(fields: [pokemon_id], references: [pokemon_id], onDelete: NoAction, onUpdate: NoAction)
+  base_hp             Int
+  effort_hp           Int
+  base_atk            Int
+  effort_atk          Int
+  base_def            Int
+  effort_def          Int
+  base_sa             Int
+  effort_sa           Int
+  base_sd             Int
+  effort_sd           Int
+  base_spd            Int
+  effort_spd          Int
+}

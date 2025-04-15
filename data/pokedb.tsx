@@ -666,12 +666,12 @@ export const fetchPokemonSprites = async () => {
     }
     const otherSpritesList: SpriteItem[] = [
       {
-        fileName: 'front_official.png',
+        fileName: 'front_offical.png',
         imageUrl: pokemonDetail.sprites.other?.['official-artwork']?.front_default || ''
       },
       {
-        fileName: 'front_official_shiny.png',
-        imageUrl: pokemonDetail.sprites.other?.['official-artwork']?.front_default || ''
+        fileName: 'front_offical_shiny.png',
+        imageUrl: pokemonDetail.sprites.other?.['official-artwork']?.front_shiny || ''
       },
       {
         fileName: 'front_default_animated.gif',

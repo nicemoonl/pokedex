@@ -14,7 +14,6 @@ export default function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode;
-  title: React.ReactNode;
 }>) {
   return (
     <>

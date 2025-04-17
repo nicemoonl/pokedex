@@ -671,6 +671,7 @@ export const fetchPokemonSprites = async () => {
       },
       {
         fileName: 'front_offical_shiny.png',
+        // @ts-expect-error : front_shiny is not defined in the type definition
         imageUrl: pokemonDetail.sprites.other?.['official-artwork']?.front_shiny || ''
       },
       {

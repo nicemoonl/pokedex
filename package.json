@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "vercel-build": "prisma generate && prisma migrate deploy && next build",
+    "vercel-build": "prisma generate && prisma db push --accept-data-loss && next build",
     "start": "next start",
     "lint": "next lint",
     "prismastudio": "prisma studio -b none",
@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@heroui/react": "^2.6.14",
-    "@prisma/client": "^6.3.1",
+    "@prisma/client": "^6.6.0",
     "axios": "^1.7.9",
     "axios-cache-interceptor": "^1.6.2",
     "framer-motion": "^12.4.2",
@@ -31,7 +31,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
     "postcss": "^8",
-    "prisma": "^6.3.1",
+    "prisma": "^6.6.0",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }

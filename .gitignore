@@ -40,5 +40,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# pokemon db
+# pokedex blob for sprites
 /public/pokemon/sprites/*
+
+# vercel
+.vercel
+.env*.local

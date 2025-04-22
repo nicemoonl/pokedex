@@ -1,9 +1,8 @@
 'use client'
-import { getPokemonsByGeneration, getPokemonsByGenerationType, getPokemonSpeciesDetailByName, getPokemonSpeciesNamesEvolveTo } from "@/data/pokedb";
+import { checkFileExists, getPokemonsByGeneration, getPokemonsByGenerationType, getPokemonSpeciesDetailByName, getPokemonSpeciesNamesEvolveTo } from "@/data/pokedb";
 import { Button, Popover, PopoverContent, PopoverTrigger, ScrollShadow, Select, SelectItem, Spinner } from "@heroui/react"
 import React, { useEffect, useState, useTransition } from "react";
 import Image from 'next/image'
-import { initializeSpriteCache, getPokemonSpriteUrl } from '@/utils/sprite-utils';
 
 /* const dependencies declaration */
 type PokemonDetail = NonNullable<Awaited<ReturnType<typeof getPokemonSpeciesDetailByName>>>
@@ -28,6 +27,7 @@ const typeList = [
   { key: 'steel', label: 'Steel' },
   { key: 'fairy', label: 'Fairy' },
 ];
+const spritesDir = '/pokemon/sprites'
 const generationList = [
   {
     key: '0',
@@ -136,11 +136,6 @@ export default function View() {
   const [activePokemonEvolutionChains, setActivePokemonEvolutionChains] = useState<PokemonDetail[][] | null>([])
   const [variationThumbnails, setVariationThumbnails] = useState<string[]>([])
   const [displayPokemonInfoPanel, setDisplayPokemonInfoPanel] = useState(false) // control transition of right panel
-
-  // Initialize sprite cache on component mount
-  useEffect(() => {
-    initializeSpriteCache();
-  }, []);
 
   /* general function */
   const localize = (eng: string, chi?: string | null, jap?: string | null) => {
@@ -314,7 +309,7 @@ export default function View() {
                           onClick={() => handlePokemonCardClick(pokemonData.name)}>
                           <div className="w-16 h-16 rounded-full overflow-hidden">
                             <Image
-                              src={getPokemonSpriteUrl(pokemonData?.pokemons[0]?.pokemon_id, 'front_default.png')}
+                              src={`${spritesDir}/${pokemonData?.pokemons[0]?.pokemon_id}/front_default.png`}
                               alt={pokemonData?.name || ''}
                               width={120}
                               height={120}
@@ -372,7 +367,7 @@ export default function View() {
 
     const pokemonVariationsViewList = () => {
       if (activePokemonData) {
-        const defaultThumbnail = getPokemonSpriteUrl(activePokemonData.pokemons[0].pokemon_id, 'front_default.png')
+        const defaultThumbnail = `${spritesDir}/${activePokemonData.pokemons[0].pokemon_id}/front_default.png`
         return (
           activePokemonData.pokemons.map((variation, index) => {
             let variationName = ''
@@ -529,9 +524,9 @@ export default function View() {
   useEffect(() => {
     const initMainImage = async () => {
       if (activePokemonData) {
-        let imageUrl = getPokemonSpriteUrl(activePokemonData.pokemons[variationId]?.pokemon_id, `front_offical${isShiny ? '_shiny' : ''}.png`)
-        if (!imageUrl) {
-          imageUrl = getPokemonSpriteUrl(activePokemonData.pokemons[0].pokemon_id, 'front_default.png')
+        let imageUrl = `${spritesDir}/${activePokemonData.pokemons[variationId]?.pokemon_id}/front_offical${isShiny ? '_shiny' : ''}.png`
+        if (await !checkFileExists(imageUrl)) {
+          imageUrl = `${spritesDir}/${activePokemonData.pokemons[0].pokemon_id}/front_default.png`
         }
         setActivePokemonImageUrl(imageUrl)
       }
@@ -541,7 +536,13 @@ export default function View() {
       if (activePokemonData) {
         const imageUrlList = []
         for (const [index, pokemon] of activePokemonData.pokemons.entries()) {
-          const imageUrl = getPokemonSpriteUrl(pokemon.pokemon_id, `front_${index == variationId && !isShiny ? 'shiny' : 'default'}.png`)
+          // eslint-disable-next-line prefer-const
+          let imageUrl = `${spritesDir}/${pokemon.pokemon_id}/front_${index == variationId && !isShiny ? 'shiny' : 'default'}.png`
+          // check exist is not working here
+          // const exist = await checkFileExists(imageUrl)
+          // if (!exist) {
+          //   imageUrl = `${spritesDir}/${activePokemonData.pokemons[0].pokemon_id}/front_default.png`
+          // }
           imageUrlList.push(imageUrl)
         }
         setVariationThumbnails(imageUrlList)
@@ -654,7 +655,7 @@ export default function View() {
                     onClick={() => { handlePokemonCardClick(pokemonSpecies.name) }}>
                     <div className="transition-all duration-200 group-hover/pokemon-card:scale-125">
                       <Image
-                        src={getPokemonSpriteUrl(pokemonSpecies.pokemons[0]?.pokemon_id, 'front_default.png')}
+                        src={`${spritesDir}/${pokemonSpecies.pokemons[0]?.pokemon_id}/front_default.png`}
                         width={'100'}
                         height={'100'}
                         alt={pokemonSpecies.name}
@@ -679,7 +680,7 @@ export default function View() {
                   {activePokemonData &&
                     <div className="aspect-square">
                       <Image
-                        src={activePokemonImageUrl || getPokemonSpriteUrl(activePokemonData.pokemons[0].pokemon_id, 'front_default.png')}
+                        src={activePokemonImageUrl || `${spritesDir}/${activePokemonData.pokemons[0].pokemon_id}/front_default.png`}
                         width={'475'}
                         height={'475'}
                         alt={activePokemonData.name}

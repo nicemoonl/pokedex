@@ -1,6 +1,7 @@
 import { list } from '@vercel/blob';
 
 const SPRITE_PREFIX = 'pokemon/sprites';
+const BLOB_READ_WRITE_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
 
 type SpriteType = {
   url: string;
@@ -11,7 +12,7 @@ let spriteCache: Record<string, SpriteType> = {};
 
 export async function initializeSpriteCache() {
   try {
-    const { blobs } = await list();
+    const { blobs } = await list({ token: BLOB_READ_WRITE_TOKEN });
     spriteCache = blobs.reduce((acc, blob) => {
       acc[blob.pathname] = {
         url: blob.url,

@@ -2,11 +2,11 @@
  * Script to upload sprites to Cloudinary.
  *
  * Usage:
- *   npx ts-node uploadSpritesToCloudinary.ts
- *   npx ts-node uploadSpritesToCloudinary.ts -f <folder>
+ *   npx tsx scripts/uploadSpritesToCloudinary.ts
+ *   npx tsx scripts/uploadSpritesToCloudinary.ts -f <folder>
  *
  * Options:
- *   -f, --folder <folder>  Specific Pokemon folder to upload
+ *   -f, --folder <folder (pokemon id)>  Specific Pokemon folder to upload
  */
 
 import { v2 as cloudinary } from 'cloudinary';

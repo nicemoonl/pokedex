@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   // page meta
-  // const currentPath = "/pokedb/pokedex"
+  // const currentPath = "/pokedex"
 
   return (
     <>
